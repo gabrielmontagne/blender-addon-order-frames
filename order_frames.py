@@ -1,6 +1,5 @@
 import bpy
-
-
+import os
 
 class SEQUENCE_OT_order_frames(bpy.types.Operator):
     bl_idname = 'sequencer.order_frames'
@@ -18,13 +17,34 @@ class SEQUENCE_OT_order_frames(bpy.types.Operator):
         return wm.invoke_props_dialog(self)
 
     def execute(self, context):
-        print('tons? target {}'.format(self.target_name))
-        print('seqs?', context.selected_sequences)
-        result = []
+        path, base = os.path.split(bpy.data.filepath)
+        target_path = os.path.join(path, bpy.path.clean_name(self.target_name))
+        os.makedirs(target_path, exist_ok=True)
 
-        for seq in context.selected_sequences:
-            print('seq', seq)
-            print('seq', seq.elements)
+        all_elements = []
+
+        print('\n' * 3)
+
+        for active_strip in context.selected_sequences:
+            strip_directory = bpy.path.abspath(active_strip.directory)
+            elements = active_strip.elements
+            frame_offset_start = active_strip.frame_offset_start
+            frame_final_start = active_strip.frame_final_start
+            frame_final_duration = active_strip.frame_final_duration
+
+            all_elements += [ 
+                os.path.join(strip_directory, element.filename)
+                for element in 
+                elements[
+                frame_offset_start:frame_final_duration + frame_offset_start]
+            ]
+
+        for i, element in enumerate(all_elements):
+            # win
+            print(i, element)
+
+        # window_manager.progress_begin(0, len(elements_to_process))
+        # print('elements_to_process', elements_to_process)
 
         return {'FINISHED'}
 
