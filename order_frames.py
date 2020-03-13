@@ -1,6 +1,7 @@
+from os.path import split, join, splitext
+from shutil import copy
 import bpy
 import os
-from os.path import split, join, splitext
 
 class SEQUENCE_OT_order_frames(bpy.types.Operator):
     bl_idname = 'sequencer.order_frames'
@@ -42,7 +43,7 @@ class SEQUENCE_OT_order_frames(bpy.types.Operator):
 
         for i, element in enumerate(all_elements):
             extension = splitext(element)[1]
-            print(element, join(target_path, 'frame-{:08d}.{}'.format(i, extension)))
+            print(copy(element, join(target_path, 'frame-{:08d}.{}'.format(i, extension))))
 
         # window_manager.progress_begin(0, len(elements_to_process))
         # print('elements_to_process', elements_to_process)
