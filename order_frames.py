@@ -9,12 +9,17 @@ class SEQUENCE_OT_order_frames(bpy.types.Operator):
 
     target_name: bpy.props.StringProperty(name="Target", default='ordered')
 
+    @classmethod
+    def poll(self, context):
+        return len(context.selected_sequences)
+
     def invoke(self, context, event):
         wm = context.window_manager
         return wm.invoke_props_dialog(self)
 
     def execute(self, context):
         print('tons? target {}'.format(self.target_name))
+        print('seqs?', context.selected_sequences)
         return {'FINISHED'}
 
 def register():
