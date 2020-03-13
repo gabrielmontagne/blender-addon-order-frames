@@ -11,7 +11,7 @@ class SEQUENCE_OT_order_frames(bpy.types.Operator):
 
     @classmethod
     def poll(self, context):
-        return len(context.selected_sequences)
+        return bpy.data.filepath and len(context.selected_sequences)
 
     def invoke(self, context, event):
         wm = context.window_manager
@@ -20,6 +20,12 @@ class SEQUENCE_OT_order_frames(bpy.types.Operator):
     def execute(self, context):
         print('tons? target {}'.format(self.target_name))
         print('seqs?', context.selected_sequences)
+        result = []
+
+        for seq in context.selected_sequences:
+            print('seq', seq)
+            print('seq', seq.elements)
+
         return {'FINISHED'}
 
 def register():
