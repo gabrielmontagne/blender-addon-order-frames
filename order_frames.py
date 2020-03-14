@@ -33,8 +33,6 @@ class SEQUENCE_OT_order_frames(bpy.types.Operator):
 
         all_elements = []
 
-        print('\n' * 3 + '-' * 5)
-
         ordered_sequences = sorted(context.selected_sequences, key=lambda s: s.frame_final_start)
 
         for active_strip in ordered_sequences:
@@ -50,6 +48,9 @@ class SEQUENCE_OT_order_frames(bpy.types.Operator):
                 elements[
                 frame_offset_start:frame_final_duration + frame_offset_start]
             ]
+
+        wm = context.window_manager
+        wm.progress_begin(0, len(all_elements))
 
         for i, element in enumerate(all_elements):
 
@@ -69,6 +70,10 @@ class SEQUENCE_OT_order_frames(bpy.types.Operator):
                     channel=active_strip.channel + 1)
             else:
                 new_sequence.elements.append(file_name)
+
+            wm.progress_update(i)
+
+        wm.progress_end()
 
         return {'FINISHED'}
 
