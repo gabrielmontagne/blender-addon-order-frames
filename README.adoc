@@ -1,0 +1,16 @@
+= Blender addon: VSE Order images sequences
+
+This addon is for when you've edited a bunch of image sequences on the VSE editor and would like to consolidate the edit without re-encoding all the images.
+
+You can, on the VSE, select the set of clips you want to “order”, search for _Order image sequences_
+
+image::feh_017318_000001_2020-03-14-095924_701x538_scrot.png[Find the operator]
+
+The addon will open a dialog where you can choose the name of the output folder and strip.
+
+image::feh_017318_000002_2020-03-14-100009_614x397_scrot.png[Configure]
+
+The addon will create a folder, copy all the images in order, and create a new strip with the consolidated frames.
+
+image::feh_017318_000003_2020-03-14-100041_328x407_scrot.png[Result]
+
