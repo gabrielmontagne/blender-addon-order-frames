@@ -11,12 +11,15 @@ bl_info = {
     'blender': (2, 80, 0)
 }
 
+version_file = 'VERSION.txt'
+
 class SEQUENCE_OT_order_frames(bpy.types.Operator):
     bl_idname = 'sequencer.order_frames'
     bl_label = "Order image sequences"
     bl_options = {'PRESET'}
 
     target_name: bpy.props.StringProperty(name="Target", default='ordered')
+    pad_with_copies: bpy.props.BoolProperty(name="Padd with properties", default=True)
 
     @classmethod
     def poll(self, context):
@@ -28,7 +31,20 @@ class SEQUENCE_OT_order_frames(bpy.types.Operator):
 
     def execute(self, context):
         path, base = split(bpy.data.filepath)
-        target_path = join(path, clean_name(self.target_name))
+
+        filepath = bpy.data.filepath
+        base_dir = os.path.dirname(filepath)
+
+        version_path = os.path.join(base_dir, version_file)
+        version = None
+        if os.path.isfile(os.path.join(base_dir, version_path)):
+            version = open(version_path, 'r').read().strip()
+
+        if version:
+            target_path = join(path, clean_name(self.target_name), version)
+        else:
+            target_path = join(path, clean_name(self.target_name))
+
         os.makedirs(target_path, exist_ok=True)
 
         all_elements = []
@@ -42,12 +58,23 @@ class SEQUENCE_OT_order_frames(bpy.types.Operator):
             frame_final_start = active_strip.frame_final_start
             frame_final_duration = active_strip.frame_final_duration
 
-            all_elements += [
-                join(strip_directory, element.filename)
-                for element in
-                elements[
-                frame_offset_start:frame_final_duration + frame_offset_start]
-            ]
+            first_selection_index = frame_offset_start
+            final_selection_index = frame_final_duration + frame_offset_start
+
+            selected_elements = elements[ first_selection_index : final_selection_index ]
+
+            if self.pad_with_copies:
+
+                target_length = final_selection_index - first_selection_index
+                current_length = len(selected_elements)
+
+                missing_length = target_length - current_length
+
+                if missing_length > 0:
+                    pad = [selected_elements[-1]] * missing_length
+                    selected_elements += pad
+
+            all_elements += [ join(strip_directory, element.filename) for element in selected_elements ]
 
         wm = context.window_manager
         wm.progress_begin(0, len(all_elements))
@@ -56,7 +83,9 @@ class SEQUENCE_OT_order_frames(bpy.types.Operator):
 
             extension = splitext(element)[1]
             file_name = 'frame-{:08d}{}'.format(i, extension)
+
             destination_path = join(target_path, file_name)
+
             copy(element, destination_path)
 
             if i == 0:
