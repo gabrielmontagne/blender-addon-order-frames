@@ -23,7 +23,7 @@ class SEQUENCE_OT_order_frames(bpy.types.Operator):
 
     @classmethod
     def poll(self, context):
-        return bpy.data.filepath and len(context.selected_sequences)
+        return bpy.data.filepath and context.selected_sequences and len(context.selected_sequences)
 
     def invoke(self, context, event):
         wm = context.window_manager
