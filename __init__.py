@@ -54,9 +54,9 @@ class SEQUENCE_OT_order_frames(bpy.types.Operator):
         for active_strip in ordered_sequences:
             strip_directory = abspath(active_strip.directory)
             elements = active_strip.elements
-            frame_offset_start = active_strip.frame_offset_start
-            frame_final_start = active_strip.frame_final_start
-            frame_final_duration = active_strip.frame_final_duration
+            frame_offset_start = int(active_strip.frame_offset_start)
+            frame_final_start = int(active_strip.frame_final_start)
+            frame_final_duration = int(active_strip.frame_final_duration)
 
             first_selection_index = frame_offset_start
             final_selection_index = frame_final_duration + frame_offset_start
